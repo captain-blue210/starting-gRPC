@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package myapp;
+
+service AddressBookService {
+  rpc Search (SearchRequest) returns (SearchResponse);
+}
+
+message SearchRequest {
+        string name = 1;
+}
+
+message SearchResponse {
+        Person person = 1;
+}
+
+message Person {
+        int32 id = 1;
+        string name = 2;
+        string email = 3;
+
+        // リスト配列
+        // 多次元配列は定義できない
+        repeated PhoneNumber phone_numbers = 4;
+
+        // 列挙型
+        enum PhoneType {
+            UNKNOWN = 0;
+            MOBILE = 1;
+            HOME = 2;
+            WORK = 3;
+        }
+
+        message PhoneNumber {
+            string number = 1;
+            PhoneType phone_type = 2;
+        }
+}
+
+// サーバーストリーミングRPC
+rpc SearchLikeBrokenRadio (SearchRequest) returns (stream SearchResponse);
+
+// クライアントストリーミングRPC
+rpc SearchDuplicatedQuery (stream SearchRequest) returns (SearchResponse)
+
+// 双方向ストリーミングRPC
+rpc SearchDuplicatedQuery (stream SearchRequest) returns (stream SearchResponse)
+
+// スカラー型
+// 数値、文字列、真偽値、バイト配列
+int32 id = 1;
+string name = 2;
+bool isBool = true;
+
+// メッセージ型
+// 右の数字は「タグナンバー」
+message Person {
+    int32 id = 1;
+    string name = 2;
+    string email = 3;
+}
+
+message Person {
+    int32 id = 1;
+    string name = 2;
+    string email = 3;
+    string address = 5;
+    // deprecated 廃止予定かつ非推奨であるフィールドを明示する
+    string phone_number = 6 [deprecated = true]
+
+    // reserved識別子 廃盤にしたタグナンバー
+    reserved 7, 8, 10 to 19;
+    reserved "fax_number";
+}
