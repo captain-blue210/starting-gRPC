@@ -7,6 +7,8 @@ import (
 	"os"
 	"os/signal"
 
+	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
@@ -21,7 +23,18 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	server := grpc.NewServer()
+	zapLogger, err := zap.NewProduction()
+	if err != nil {
+		panic(err)
+	}
+
+	grpc_zap.ReplaceGrpcLogger(zapLogger)
+
+	server := grpc.NewServer(
+		grpc.UnaryInterceptor(
+			grpc_zap.UnaryServerInterceptor(zapLogger),
+		),
+	)
 	api.RegisterPancakeBakerServiceServer(
 		server,
 		handler.NewBakerHandler(),
