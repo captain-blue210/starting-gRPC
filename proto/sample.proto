@@ -1,10 +1,14 @@
+// バージョン定義
 syntax = "proto3";
 
+// パッケージ定義
 package sample;
 
+// import
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
 
+// サービスとRPCメソッド定義
 service SampleService {
   rpc Sample (SampleRequest) returns (SampleResponse);
 }
@@ -16,6 +20,15 @@ message SampleRequest {
 message SampleResponse {
         Sample sample = 1;
 }
+
+// サーバーストリーミングRPC
+rpc SampleServerStreamMethod (SampleRequest) returns (stream SampleResponse);
+
+// クライアントストリーミングRPC
+rpc SampleClientStreamMethod (stream SampleRequest) returns (SampleResponse)
+
+// 双方向ストリーミングRPC
+rpc SampleBidirectionalMethod (stream SampleRequest) returns (stream SampleResponse)
 
 // メッセージ型
 // 右の数字は「タグナンバー」
@@ -58,12 +71,3 @@ message Sample {
     }
 
 }
-
-// サーバーストリーミングRPC
-rpc SampleServerStreamMethod (SampleRequest) returns (stream SampleResponse);
-
-// クライアントストリーミングRPC
-rpc SampleClientStreamMethod (stream SampleRequest) returns (SampleResponse)
-
-// 双方向ストリーミングRPC
-rpc SampleBidirectionalMethod (stream SampleRequest) returns (stream SampleResponse)
